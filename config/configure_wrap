@@ -25,4 +25,6 @@ if test x"$arch" != x""; then
 	arch="ARCH_$arch."
 fi
 cache_name="$config_cache/config-$hostname$arch$cflags${args}cache"
-exec ./configure --cache-file=$cache_name $*
+# go figure, when I exec it it doesn't work when a ' ' is in pwd
+./configure --cache-file=$cache_name $*
+#exec ./configure --cache-file=$cache_name $*
