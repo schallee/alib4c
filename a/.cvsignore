@@ -1,1 +1,2 @@
 Makefile.in
+.deps/ Makefile alloca.h clean.h error.h error_mod.h resolve.h types.h util.h varg.h

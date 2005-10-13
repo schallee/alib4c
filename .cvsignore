@@ -3,3 +3,4 @@ configure
 aclocal.m4
 Makefile.in
 autom4te.cache
+Makefile config.log config.status libtool
