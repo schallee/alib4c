@@ -9,3 +9,6 @@ resolve.h
 types.h
 util.h
 varg.h
+.libs
+*.lo
+*.la
