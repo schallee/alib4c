@@ -1,0 +1,49 @@
+/* @configure_input@ */
+#ifndef a_clean_h
+#define a_clean_h	1
+
+#include <a/varg.h>
+#include <a/cpp.h>
+#include <a/types.h>
+
+/*********
+ * types *
+ *********/
+#ifndef A_CLEAN_MOD_T_DECLARED
+	typedef void * a_clean_mod_t;
+#	define A_CLEAN_MOD_T_DECLARED
+#endif
+
+a_begin_c_decls_m
+
+/**********
+ * macros *
+ **********/
+#define a_clean_mod_proto_decl_m(name)	\
+	extern const a_clean_mod_t *a_clean_ ## name
+#define a_clean(...)	a_clean_real(__VA_ARGS__, NULL);
+
+/*************
+ * functions *
+ *************/
+a_status_t a_clean_vargs(const a_clean_mod_t *mod, va_list *args);
+a_status_t a_clean_real(const a_clean_mod_t *mod, ...);
+
+/***********
+ * modules *
+ ***********/
+a_clean_mod_proto_decl_m(file_ptr);
+a_clean_mod_proto_decl_m(free);
+a_clean_mod_proto_decl_m(socket);
+a_clean_mod_proto_decl_m(sock);
+a_clean_mod_proto_decl_m(unmap);
+a_clean_mod_proto_decl_m(unlink);
+
+/* system specific modules */
+#if @OS_TYPE_WIN32@ && @HAVE_WINDOWS_H@
+	a_clean_mod_proto_decl_m(handle);
+#endif
+
+a_end_c_decls_m
+
+#endif

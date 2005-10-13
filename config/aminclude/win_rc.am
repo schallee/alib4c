@@ -1,0 +1,8 @@
+# how to build a .o from a .rc
+#`echo $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+#| sed -e 's/-I/--include-dir /g;s/-D/--define /g'`\
+#
+#.rc.lo:
+#$(LIBTOOL) --mode=compile $(top_srcdir)/config/windres_wrap $(RC) \
+#$(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES)	\
+#-i $< -J rc -o $@ -O coff

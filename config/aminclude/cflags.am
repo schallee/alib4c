@@ -1,0 +1,11 @@
+if DEBUG
+DEBUG_CFLAGS = -g -DDEBUG
+endif
+
+if MASS_WARNINGS
+MASS_WARNINGS_CFLAGS = -Wall -Werror 
+#MASS_WARNINGS_CFLAGS = -Wall -Werror -std=c99 -W -Wfloat-equal -Wendif-labels -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wsign-compare -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wmissing-noreturn -Wpacked -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Wendif-labels -Wno-long-long -Wno-cast-qual -Wno-missing-format-attribute -Wno-conversion
+#MASS_WARNINGS_CFLAGS = -Wall -Werror -pedantic-errors -W -Wfloat-equal -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wmissing-noreturn -Wmissing-format-attribute -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Wno-long-long -Wno-cast-qual
+endif
+
+AM_CFLAGS = $(MASS_WARNINGS_CFLAGS) $(DEBUG_CFLAGS)

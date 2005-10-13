@@ -1,0 +1,43 @@
+/* @configure_input@ */
+#ifndef a_util_h
+#define a_util_h 1
+
+#include <a/types.h>
+#include <a/varg.h>
+#include <a/cc.h>
+#include <a/cpp.h>
+
+#if @HAVE_STDLIB_H@
+#	include <stdlib.h>
+	/* for a_free */
+#endif
+
+/* nice to have null for folks */
+#if @HAVE_STDDEF_H@
+#	include <stddef.h>
+#elif !defined(NULL)
+#	define NULL	((void *)(0))
+#endif
+
+a_begin_c_decls_m
+
+char *a_basename(const char *path);
+char *a_barename(const char *path);
+char *a_vsprintf_malloc(const char *fmt, va_list arg_list) A_CC_PRINTF(1,0);
+char *a_sprintf_malloc(const char *fmt, ...) A_CC_PRINTF(1,2);
+void *a_memdup(const void *in, size_t in_len);
+char *a_strdup(const char *in);
+char *a_strchomp(char *str);
+void *a_malloc(size_t size);
+void *a_realloc(void *in, size_t size);
+void *a_realloc_free(void *in, size_t size);
+#define a_free(ptr)	free(ptr)
+char *a_chomp(char *str);
+char *a_fullpath(const char *name);
+void *a_zero_mem(volatile void *ptr, size_t len);
+char *a_strcat_realloc(char *orig, const char *add);
+void *a_memcat_realloc(void *a, size_t a_len, const void *b, size_t b_len);
+
+a_end_c_decls_m
+
+#endif

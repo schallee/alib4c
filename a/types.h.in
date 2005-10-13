@@ -1,0 +1,95 @@
+/* @configure_input@ */
+#ifndef a_types_h
+#define a_types_h	1
+
+#ifdef __cplusplus
+#	define __STDC_LIMIT_MACROS
+#endif
+
+@HEADER_STDINT_H@
+
+#if @HAVE_SYS_TYPES_H@
+#	include <sys/types.h>
+#endif
+#if @HAVE_NETINET_IN_H@
+#	include <netinet/in.h>
+	/* htons and friends */
+#endif
+#if @OS_TYPE_WIN32@ && @HAVE_WINSOCK2_H@
+#	include <winsock2.h>
+#endif
+
+#if @HAVE_BYTESWAP_H@
+#	include <byteswap.h>
+#endif
+
+/* boolean stuff */
+@HEADER_STDBOOL_H@
+typedef bool a_bool_t;
+
+/* typedefs for byte */
+typedef uint8_t a_byte_t;
+
+/* conversion macros for 8 bits */
+#define hton_8(x)	(x)
+#define ntoh_8(x)	(x)
+
+/* converion macros for 16 bits */
+#define hton_16(x)	(htons(x))
+#define ntoh_16(x)	(ntohs(x))
+
+/* conversion macros for 32 bits */
+#define hton_32(x)	(htonl(x))
+#define ntoh_32(x)	(ntohl(x))
+
+/* conversion macros for 64 bits */
+#if WORDS_BIGENDIAN
+#	define hton_64(x)	(x)
+#	define ntoh_64(x)	(x)
+#else
+#	define hton_64(x)	(bswap_64((x)))
+#	define ntoh_64(x)	(bswap_64((x)))
+#endif
+
+/* bswap for 64 bits */
+#if !defined(HAVE_BSWAP_64) && !defined(bswap_64)
+#	define bswap_64(n)	\
+		(	\
+			(((n)&UINT64_C(0x00000000000000FF)) << 56) |	\
+			(((n)&UINT64_C(0x000000000000FF00)) << 40) |	\
+			(((n)&UINT64_C(0x0000000000FF0000)) << 24) |	\
+			(((n)&UINT64_C(0x00000000FF000000)) <<  8) |	\
+			(((n)&UINT64_C(0x000000FF00000000)) >>  8) |	\
+			(((n)&UINT64_C(0x0000FF0000000000)) >> 24) |	\
+			(((n)&UINT64_C(0x00FF000000000000)) >> 40) |	\
+			(((n)&UINT64_C(0xFF00000000000000)) >> 56)	\
+		)
+#endif
+
+typedef int a_fd_t;
+#define a_fd_valid_m(X)		((X)>=0)
+#define a_fd_invalid_m(X)	((X)<0)
+
+#if @OS_TYPE_WIN32@ && @HAVE_WINSOCK2_H@
+	typedef SOCKET a_socket_t;
+#	define a_socket_valid_m(X)	((X)!= INVALID_SOCKET)
+#	define a_socket_invalid_m(X)	((X)== INVALID_SOCKET)
+#else
+	typedef a_fd_t a_socket_t;
+#	define a_socket_valid_m(X)	a_fd_valid_m(X)
+#	define a_socket_invalid_m(X)	a_fd_invalid_m(X)
+#endif
+
+typedef a_bool_t a_status_t;
+#define	A_STATUS_GOOD		false
+#define A_STATUS_SUCCESS	false
+#define A_STATUS_BAD		true
+#define A_STATUS_ERROR		true
+
+typedef unsigned int a_word_t;
+
+typedef a_word_t a_mod_type_t;
+#define A_MOD_CLEAN		1
+#define A_MOD_ERROR		2
+
+#endif

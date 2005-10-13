@@ -1,0 +1,28 @@
+#! /bin/sh
+
+config_cache="config/cache"
+
+if test -d $config_cache; then
+	:
+else
+	mkdir $config_cache;
+fi
+
+if test x"${CFLAGS+set}" = x"set"; then
+	cflags=`echo $CFLAGS | sed 's/[^a-zA-Z0-9]/_/g'`
+	cflags="CFLAGS_${cflags}."
+fi
+hostname=`echo $HOSTNAME | sed 's/[^a-zA-Z0-9]/_/g'`
+if test x"$hostname" != x""; then
+	hostname="HOSTNAME_$hostname."
+fi
+args=`echo $* | sed 's/[^a-zA-Z0-9]/_/g'`
+if test x"$args" != x""; then
+	args="ARGS_$args."
+fi
+arch=`config/config.guess | sed 's/[^a-zA-Z0-9]/_/g'`
+if test x"$arch" != x""; then
+	arch="ARCH_$arch."
+fi
+cache_name="$config_cache/config-$hostname$arch$cflags${args}cache"
+exec ./configure --cache-file=$cache_name $*

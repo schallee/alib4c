@@ -1,0 +1,20 @@
+# make stuff to include in all makefiles
+.PRECIOUS: .%.o %.a %.d
+
+%.d: %.c 
+	$(CC) $(INCLUDES) -M $< > $@
+
+%.so: 
+	$(CC) -shared -o $@ $^
+
+.PHONEY: clean full
+full: clean all
+
+.PHONEY: clean
+clean:
+	@for dirs in *; do\
+		if [ ! -L $$dirs -a -d $$dirs -a -f $$dirs/makefile ]; then \
+			$(MAKE) -C $$dirs $@ ; \
+		fi; \
+	done;
+	-rm -fr *.o *.d $(TARGETS) *.out *.a *.so core

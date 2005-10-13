@@ -1,0 +1,259 @@
+#! /bin/sh
+#set -x
+#set -e
+
+usage()
+{
+	echo "usage:" `basename $0` "[-vw]" >&2
+	echo "	-v verbose" >&2
+	echo "	-w warnings" >&2
+	exit 1
+}
+
+fatal()
+{
+	if test x"$1" = x""; then
+		echo "fatal"
+	else
+		echo "fatal: $1"
+	fi
+	exit 1
+}
+
+cmd_exists()
+{
+	echo -n "Checking for $1..."
+	if $1 --version > /dev/null 2> /dev/null; then
+		echo "yes"
+		return 0
+	else
+		echo "no"
+		if test x"$2" = x"fatal"; then
+			fatal "$1 is required"
+		else
+			return 1
+		fi
+	fi
+}
+
+test_cmd()
+{
+	if test x"$3" != x"false"; then
+		echo -n "Checking that $1 can handle $2..."
+		if $1 $2 --version > /dev/null 2>/dev/null; then
+			echo "yes"
+			return 0
+		else
+			echo "no"
+			return 1
+		fi
+	fi
+	return 1
+}
+
+check_version()
+{
+	echo -n "Checking $1 version..."
+	VER=`$1 --version | sed -e '1!d; s/.*[ 	]\([0123456789][0123456789]*\)\.\([0123456789][0123456789]*\).*/\1.\2/g'`
+	echo -n "$VER"
+	if test x"$VER" = x"$2"; then
+		echo " good"
+		return 0
+	else
+		if test x"$3" = x""; then
+			echo " only tested with $2. Good luck!"
+		else
+			echo ", $3"
+		fi
+		return 1
+	fi
+}
+
+run_cmd()
+{
+	echo -n "Running $1..."
+	$1 $2 > .tmp.out 2>&1
+	LAST_STATUS=$?
+	if test x"$LAST_STATUS" != x"0" || test x"$3" = x"true" || test x"$4" = x"true"; then
+		if test x`wc -l .tmp.out | cut -d' ' -f1` != x"0"; then
+			echo
+			cat .tmp.out
+			echo -n "Running $1..."
+		fi
+	fi
+	rm -f .tmp.out
+	if test x"$LAST_STATUS" = x"0"; then
+		echo "done"
+	else
+		echo "failed"
+		fatal
+	fi
+}
+
+opts=`getopt -o vw -- "$@"`
+
+if test x"$?" != x"0"; then
+	usage
+fi
+
+eval set -- "$opts"
+
+VERBOSE="false"
+WARNINGS="false"
+
+while true; do
+	case "$1" in
+		-v)
+			VERBOSE="true"
+			shift
+		;;
+		-w)
+			WARNINGS="true"
+			shift
+		;;
+		--)
+			shift
+			break
+		;;
+		*)
+			echo "error in implementation of command line processing"
+			exit1
+		;;
+	esac
+done
+
+if test x"$VERBOSE" = x"true"; then
+	NOT_VERBOSE="false"
+else
+	NOT_VERBOSE="true"
+fi
+
+# check automake
+AM=automake
+if ! cmd_exists $AM; then
+	if cmd_exists automake-1.8 fatal; then
+		AM=automake-1.8
+	fi
+fi
+
+if ! check_version $AM 1.8 "hum..."; then
+	if cmd_exists automake-1.8; then
+		check_version automake-1.8 1.8
+		AM=automake-1.8
+	fi
+fi
+
+AM_OPTS=
+if test_cmd $AM --warnings=all $WARNINGS; then
+	AM_OPTS="$AM_OPTS --warnings=all"
+fi
+
+if test_cmd $AM -v $VERBOSE; then
+	AM_OPTS="$AM_OPTS -v"
+fi
+
+if test_cmd $AM --force-missing; then
+	AM_OPTS="$AM_OPTS --force-missing"
+else
+	echo -n "removing automake installed files..."
+	rm -f config/install-sh config/mkinstalldirs config/missing INSTALL COPYING
+	echo "done"
+fi
+
+if test_cmd $AM --add-missing; then
+	AM_OPTS="$AM_OPTS --add-missing"
+else
+	echo "	this is fatal, --add-missing is required"
+	exit 1
+fi
+
+if test_cmd $AM --copy; then
+	AM_OPTS="$AM_OPTS --copy"
+fi
+
+# check aclocal
+ACLOCAL=aclocal
+if ! cmd_exists $ACLOCAL; then
+	if cmd_exists aclocal-1.8 fatal; then
+		ACLOCAL=aclocal-1.8
+	fi
+fi
+
+if ! check_version $ACLOCAL 1.8 "hum..."; then
+	if cmd_exists aclocal-1.8; then
+		check_version aclocal-1.8 1.8
+		ACLOCAL=aclocal-1.8
+	fi
+fi
+
+ACLOCAL_OPTS=
+if ! test_cmd $ACLOCAL "-I dir"; then
+	echo "	fatal, -I for aclocal is required"
+	exit 1
+fi
+
+if test_cmd $ACLOCAL --verbose $VERBOSE; then
+	ACLOCAL_OPTS="$ACLOCAL_OPTS --verbose"
+fi
+
+# check autoheader
+AH=autoheader
+cmd_exists $AH fatal
+check_version $AH 2.59
+
+AH_OPTS=
+if test_cmd $AH --warnings=all $WARNINGS; then
+	AH_OPTS="$AH_OPTS --warnings=all"
+fi
+
+if test_cmd $AH -v $VERBOSE; then
+	AH_OPTS="$AH_OPTS -v"
+fi
+
+if test_cmd $AH --force; then
+	AH_OPTS="$AH_OPTS --force"
+fi
+
+# check libtoolize
+LT=libtoolize
+cmd_exists $LT fatal
+
+check_version $LT 1.5
+
+LT_OPTS=
+
+if test_cmd $LT --force; then
+	LT_OPTS="$LT_OPTS --force"
+fi
+
+if test_cmd $LT --copy; then
+	LT_OPTS="$LT_OPTS --copy"
+fi
+
+if test_cmd $LT --automake $NOT_VERBOSE; then
+	LT_OPTS="$LT_OPTS --automake"
+fi
+
+# check autoconf
+AC=autoconf
+cmd_exists $AC fatal
+
+check_version $AC 2.59
+
+AC_OPTS=
+if test_cmd $AC --force; then
+	AC_OPTS="$AC_OPTS --force"
+fi
+
+if test_cmd $AC --warnings=all $WARNINGS; then
+	AC_OPTS="$AC_OPTS --warnings=all"
+fi
+
+test_cmd $AC -v $VERBOSE
+
+	# command:	options:				verbose: warnings:
+run_cmd $ACLOCAL	"-I config/acinclude $ACLOCAL_OPTS"	$VERBOSE $WARNINGS
+run_cmd $AH		"$AH_OPTS"				$VERBOSE $WARNINGS
+run_cmd $LT		"$LT_OPTS"				$VERBOSE $WARNINGS
+run_cmd $AM		"$AM_OPTS"				$VERBOSE $WARNINGS
+run_cmd $AC		"$AC_OPTS"				$VERBOSE $WARNINGS

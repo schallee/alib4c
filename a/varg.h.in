@@ -1,0 +1,11 @@
+/* @configure_input@ */
+#ifndef a_varg_h
+#define a_varg_h 1
+
+#if @HAVE_STDARG_H@
+#	include <stdarg.h>
+#else
+#	error we require stdarg.h
+#endif
+
+#endif
