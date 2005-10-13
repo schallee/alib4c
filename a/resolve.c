@@ -19,7 +19,7 @@
 #	endif
 
 	/* gethostmyname */
-#	if HAVE_SOCKET_H
+#	if HAVE_SYS_SOCKET_H
 #		include <sys/socket.h>
 #	endif
 	/* inet_pton */
