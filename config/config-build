@@ -1,3 +1,0 @@
-#! /bin/sh
-
-exec ./configure --cache-file=config.cache.linux-build
