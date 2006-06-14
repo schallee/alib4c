@@ -48,9 +48,10 @@ AC_SYS_LARGEFILE
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_STDBOOL
+AC_SUBST_FILE([HEADER_STDBOOL_H])
 AS_IF([test x"$ac_cv_header_stdbool_h" = x"yes"],
 [
-	AC_SUBST([HEADER_STDBOOL_H], ["#include <stdbool.h>"])
+	HEADER_STDBOOL_H="$srcdir/config/include/has_stdbool.h"
 ],[
 	AS_IF([test x"$ac_cv_type__Bool" = x"yes"],
 	[
@@ -58,19 +59,18 @@ AS_IF([test x"$ac_cv_header_stdbool_h" = x"yes"],
 	],[
 		HEADER_STDBOOL_H="$srcdir/config/include/last_chance_stdbool.h"
 	])
-	AC_SUBST_FILE([HEADER_STDBOOL_H])
 ])
 AC_CHECK_HEADERS([inttypes.h stdint.h], [break])
+AC_SUBST_FILE([HEADER_STDINT_H])
 AS_IF([test x"$ac_cv_header_stdint_h" = x"yes"],
 [
-	AC_SUBST([HEADER_STDINT_H], ["#include <stdint.h>"])
+	HEADER_STDINT_H="$srcdir/config/include/has_stdint.h"
 ],[
 	AS_IF([test x"$ac_cv_header_inttypes_h" = x"yes"],
 	[
-		AC_SUBST([HEADER_STDINT_H], ["#include <inttypes.h>"])
+		HEADER_STDINT_H="$srcdir/config/include/has_inttypes.h"
 	],[
 		HEADER_STDINT_H="$srcdir/config/include/last_chance_stdint.h"
-		AC_SUBST_FILE([HEADER_STDINT_H])
 		AC_MSG_WARN([Didnt' find stdint.h or inttypes. Will try some standard ones.])
 	])
 ])
