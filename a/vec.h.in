@@ -1,0 +1,56 @@
+/* @configure_input@ */
+#ifndef a_vec_h
+#define a_vec_h
+
+#if @HAVE_SYS_UIO_H@
+#	include <sys/uio.h>
+#endif
+	/* iovec */
+#if @HAVE_STDDEF_H@
+#	include <stddef.h>
+#elif @HAVE_SYS_TYPES_H@
+#	include <sys/types.h>
+#endif
+	/* size_t */
+@HEADER_STDBOOL_H@
+	/* bool */
+
+
+typedef struct a_vec_struct *a_vec_t;
+
+extern a_vec_t
+a_vec_init(a_vec_t v);
+extern a_vec_t
+a_vec_alloc(void);
+extern a_vec_t
+a_vec_prepend(a_vec_t v, void *ptr, size_t size, bool free_ptr);
+extern a_vec_t
+a_vec_append(a_vec_t v, void *ptr, size_t size, bool free_ptr);
+extern size_t
+a_vec_size(a_vec_t v);
+extern size_t
+a_vec_len(a_vec_t v);
+extern void
+a_vec_free(a_vec_t v);
+
+extern a_vec_t
+a_vec_prepend_iovec(a_vec_t v, const struct iovec *i, bool free_ptr);
+extern a_vec_t
+a_vec_append_iovec(a_vec_t v, const struct iovec *i, bool free_ptr);
+extern a_vec_t
+a_vec_prepend_iovecs(a_vec_t v, const struct iovec *iovecs, size_t num, bool free_ptr);
+extern a_vec_t
+a_vec_append_iovecs(a_vec_t v, const struct iovec *iovecs, size_t num, bool free_ptr);
+extern struct iovec *
+a_vec_to_iovec(a_vec_t v, struct iovec *iovecs);
+extern struct iovec *
+a_vec_to_iovec_alloc(a_vec_t v);
+extern int
+a_vec_writev(int fd, a_vec_t v);
+
+size_t
+a_iovec_size(const struct iovec *vec, size_t count);
+size_t
+a_iovec_size_end(const struct iovec *vec, const struct iovec *end);
+
+#endif

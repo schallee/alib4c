@@ -99,6 +99,9 @@ AC_CHECK_HEADERS([signal.h])
 AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_HEADERS([sys/stat.h])
 AC_CHECK_HEADERS([ctype.h])
+AC_CHECK_HEADERS([sys/uio.h])
+DM_YES_SUBST_1([$ac_cv_header_sys_uio_h], [HAVE_SYS_UIO_H])
+
 DM_OS_TYPE_WIN32(
 [
 	AC_SUBST([OS_TYPE_WIN32], [1])
@@ -130,7 +133,7 @@ AM_CONDITIONAL(HAVE_OPENSSL, test x"$ac_cv_header_openssl_err_h" = x"yes")
 # for library
 AC_TYPE_SIZE_T
 AC_TYPE_SIGNAL
-AC_CHECK_TYPES(socklen_t)
+AC_CHECK_TYPES([socklen_t])
 
 # Checks for libraries.
 DM_OS_TYPE_WIN32(
@@ -158,6 +161,7 @@ AC_CHECK_FUNCS([isspace])
 AC_CHECK_FUNCS([vsyslog])
 AC_CHECK_FUNCS([hstrerror])
 AC_CHECK_FUNCS([fsync])
+AC_CHECK_FUNCS([writev])
 #AC_FUNC_MALLOC
 AC_FUNC_ALLOCA
 ac_cv_header_alloca_h=$ac_cv_working_alloca_h
@@ -244,5 +248,5 @@ AS_IF([test x"$enable_verbose_tests" = x"yes"],[AC_DEFINE([USE_VERBOSE_TESTS],[1
 #LTALLOCA=`echo "$ALLOCA" | sed 's/\.[^.]* /.lo /g;s/\.[^.]*$/.lo/'`
 #AC_SUBST(LTALLOCA)
 #set > config.vars
-AC_CONFIG_FILES([a/resolve.h a/clean.h a/error.h a/error_mod.h a/types.h a/varg.h a/util.h a/alloca.h a/Makefile test/Makefile test/test_common/Makefile test/util/Makefile Makefile])
+AC_CONFIG_FILES([a/resolve.h a/clean.h a/error.h a/error_mod.h a/types.h a/varg.h a/util.h a/alloca.h a/vec.h a/Makefile test/Makefile test/test_common/Makefile test/util/Makefile Makefile])
 AC_OUTPUT
