@@ -1,0 +1,96 @@
+/* @configure_input@ */
+#ifndef a_error_h
+#define a_error_h 1
+
+#include <a/types.h>
+#include <a/varg.h>
+#include <a/cpp.h>
+
+#if @HAVE_STDDEF_H@
+#	include <stddef.h>
+#elif @HAVE_STDLIB_H@
+#	include <stdlib.h>
+#elif !defined(NULL)
+#	define NULL	((void *)(0))
+#endif
+
+a_begin_c_decls_m
+
+/*********
+ * types *
+ *********/
+#ifndef A_ERROR_MOD_T_DECLARED
+	typedef void a_error_mod_t;
+#	define A_ERROR_MOD_T_DECLARED
+#endif
+typedef a_word_t a_error_t;
+
+/*******************
+ * error functions *
+ *******************/
+void a_error_add_vargs(const a_error_mod_t *mod, va_list *args);
+void a_error_add_real(const a_error_mod_t *mod, ...);
+char* a_error_str(void);
+void a_error_clear(void);
+
+/*****************
+ * errror macros *
+ *****************/
+#define a_error_add_m(...)	a_error_add_real(__VA_ARGS__, NULL)
+#define a_error(...)		a_error_add_m(__VA_ARGS__)
+#define a_error_ret(ret,...)	a_call_return_m(a_error_add_m(__VA_ARGS__), ret)
+
+/*****************
+ * error modules *
+ *****************/
+
+/* alib */
+extern const a_error_mod_t *a_error_lib;
+#define A_ERROR_C(val)			(val)
+#define A_ERROR_NO_ERROR		A_ERROR_C(0)
+#define A_ERROR_SUCCESS			A_ERROR_NO_ERROR
+#define A_ERROR_NOT_IMPLEMENTED		A_ERROR_C(1)
+#define A_ERROR_UNKNOWN			A_ERROR_C(2)
+#define A_ERROR_INVALID_OPERAND		A_ERROR_C(3)
+#define A_ERROR_INVALID_OP		A_ERROR_INVALID_OPERAND
+#define A_ERROR_OTHER_LIB		A_ERROR_C(4)
+#define A_ERROR_OTHER			A_ERROR_OTHER_LIB
+#define A_ERROR_OPERAND_TOO_SMALL	A_ERROR_C(5)
+#define A_ERROR_OP_SMALL		A_ERROR_OPERAND_TOO_SMALL
+#define A_ERROR_MAX			A_ERROR_C(5)
+#define a_error_valid_m(X)		( (X) > A_ERROR_MAX ? false : true )
+#define a_error_invalid_m(X)		( (X) > A_ERROR_MAX ? true : false )
+
+/* stdc */
+extern const a_error_mod_t *a_error_stdc;
+extern const a_error_mod_t *a_error_stdc_num;
+extern const a_error_mod_t *a_error_posix;
+extern const a_error_mod_t *a_error_posix_num;
+
+/* windows */
+#if @OS_TYPE_WIN32@ && @HAVE_WINDOWS_H@
+	extern const a_error_mod_t *a_error_win;
+	extern const a_error_mod_t *a_error_win_num;
+#endif
+
+/* winsock */
+#if @OS_TYPE_WIN32@ && @HAVE_WINSOCK2_H@
+	extern const a_error_mod_t *a_error_winsock;
+	extern const a_error_mod_t *a_error_winsock_num;
+#endif
+
+/* netdb */
+#if @HAVE_NETDB_H@
+	extern const a_error_mod_t *a_error_netdb;
+	extern const a_error_mod_t *a_error_netdb_num;
+#endif
+
+/* openssl */
+#if @HAVE_OPENSSL_ERR_H@
+	extern const a_error_mod_t *a_error_openssl;
+	extern const a_error_mod_t *a_error_openssl_num;
+#endif
+
+a_end_c_decls_m
+
+#endif
