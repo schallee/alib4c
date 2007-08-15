@@ -2,6 +2,20 @@
 
 config_cache="config/cache"
 
+for dir in . ..; do
+	if [ -f "$dir/configure.ac" ]; then
+		top_dir="$dir";
+		break;
+	fi
+done
+
+if [ ! -f "$top_dir/configure.ac" ]; then
+	echo "failed to find top directory" >&2
+	exit 1
+fi
+
+config_cache="$top_dir/config/cache"
+
 if test -d $config_cache; then
 	:
 else
@@ -20,11 +34,11 @@ args=`echo $* | sed 's/[^a-zA-Z0-9]/_/g'`
 if test x"$args" != x""; then
 	args="ARGS_$args."
 fi
-arch=`config/config.guess | sed 's/[^a-zA-Z0-9]/_/g'`
+arch=`sh "$top_dir/config/config.guess" | sed 's/[^a-zA-Z0-9]/_/g'`
 if test x"$arch" != x""; then
 	arch="ARCH_$arch."
 fi
 cache_name="$config_cache/config-$hostname$arch$cflags${args}cache"
 # go figure, when I exec it it doesn't work when a ' ' is in pwd
-./configure --cache-file=$cache_name $*
 #exec ./configure --cache-file=$cache_name $*
+sh "$top_dir/configure" --cache-file=$cache_name $*
