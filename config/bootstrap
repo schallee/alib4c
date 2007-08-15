@@ -131,15 +131,15 @@ fi
 # check automake
 AM=automake
 if ! cmd_exists $AM; then
-	if cmd_exists automake-1.8 fatal; then
-		AM=automake-1.8
+	if cmd_exists automake-1.9 fatal; then
+		AM=automake-1.9
 	fi
 fi
 
-if ! check_version $AM 1.8 "hum..."; then
-	if cmd_exists automake-1.8; then
-		check_version automake-1.8 1.8
-		AM=automake-1.8
+if ! check_version $AM 1.9 "hum..."; then
+	if cmd_exists automake-1.9; then
+		check_version automake-1.9 1.9
+		AM=automake-1.9
 	fi
 fi
 
@@ -174,15 +174,15 @@ fi
 # check aclocal
 ACLOCAL=aclocal
 if ! cmd_exists $ACLOCAL; then
-	if cmd_exists aclocal-1.8 fatal; then
-		ACLOCAL=aclocal-1.8
+	if cmd_exists aclocal-1.9 fatal; then
+		ACLOCAL=aclocal-1.9
 	fi
 fi
 
-if ! check_version $ACLOCAL 1.8 "hum..."; then
-	if cmd_exists aclocal-1.8; then
-		check_version aclocal-1.8 1.8
-		ACLOCAL=aclocal-1.8
+if ! check_version $ACLOCAL 1.9 "hum..."; then
+	if cmd_exists aclocal-1.9; then
+		check_version aclocal-1.9 1.9
+		ACLOCAL=aclocal-1.9
 	fi
 fi
 
@@ -199,7 +199,7 @@ fi
 # check autoheader
 AH=autoheader
 cmd_exists $AH fatal
-check_version $AH 2.59
+check_version $AH 2.61
 
 AH_OPTS=
 if test_cmd $AH --warnings=all $WARNINGS; then
@@ -238,7 +238,7 @@ fi
 AC=autoconf
 cmd_exists $AC fatal
 
-check_version $AC 2.59
+check_version $AC 2.61
 
 AC_OPTS=
 if test_cmd $AC --force; then
