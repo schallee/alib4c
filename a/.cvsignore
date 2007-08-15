@@ -2,13 +2,14 @@ Makefile.in
 .deps
 Makefile
 alloca.h
-clean.h
 error.h
-error_mod.h
+mem.h
 resolve.h
+sock.h
 types.h
 util.h
 varg.h
 .libs
 *.lo
 *.la
+*.loT
