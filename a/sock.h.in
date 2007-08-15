@@ -1,0 +1,13 @@
+/* @configure_input@ */
+#ifndef a_sock_h
+#define a_sock_h 1
+
+#include <a/error.h>
+
+#if @OS_TYPE_WIN32@
+	extern a_error_mod_t a_error_mod_sock;
+#else
+#	define a_error_mod_sock a_error_mod_perror
+#endif
+
+#endif
