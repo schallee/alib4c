@@ -2,11 +2,11 @@
 #	include <config.h>
 #endif
 
+#include <a/alloca.h>
 #include <a/varg.h>
 #include <a/util.h>
 #include <a/error.h>
 #include <a/cc.h>
-#include <a/clean.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -58,24 +58,107 @@ char *a_barename(const char *path)
 	return tmp;
 }
 
+/** Check to see if a certain buffer size will work for a vsprintf. This is done *  in a seperate function so that the buffer can be allocated on the stack
+ *  quickly for testing and deallocated when the function returns.
+ *  @param try_len the length of buffer to try
+ *  @param fmt the format string
+ *  @param arg_list the variable arity argument list. This may be consumed by 
+ *  the vsnprintf call so should probably be a copy of what you're finding so it
+ *  can be used again.
+ *  @returns The length of the needed buffer (including the null) or zero on 
+ *  failure.
+ */
+static size_t a_vsprintf_try_len(size_t try_len, const char *fmt, va_list arg_list)
+{
+	char *try = (char *)alloca(sizeof(char) * try_len);
+	if(vsnprintf(try, try_len, fmt, arg_list) < 0)
+		return 0;	// this works since even a zero length string will be one below...
+	return strlen(try)+1;
+}
+
+/** Find the length of buffer needed for a vsprintf call. If the vsnprintf call
+ * availible returns something usefull when passed a short string (C99) this is
+ * done efficiently. Otherwise it is done by repeatedly trying increasing sizes
+ * from a guess. This is done on the stack as this is used in error functions 
+ * where we may be out of heap space.
+ * @param fmt The format string for vsprintf
+ * @param arg_list The argument list for vsprintf. This is copied before use so
+ * 	the calling function doesn't have to worry about it.
+ * @returns The size of the buffer needed (including a null) for the vsprintf
+ * 	call.
+ */
+size_t a_vsprintf_find_len(const char *fmt, va_list arg_list)
+{
+	size_t try_len;
+	va_list arg_list_copy;
+	size_t msg_len;
+
+	// first check to see if vsnprintf returns something usefull...
+	va_copy(arg_list_copy, arg_list);
+	if((msg_len = vsnprintf(NULL, 0, fmt, arg_list_copy) + 1)>1)
+	{
+		//fprintf(stderr, "%s: working vsnprintf msg_len=%u\n", __func__, msg_len);
+		return msg_len;	// that was easy
+	}
+
+	// it doesn't..., make a guess and double until we find it...
+	va_copy(arg_list_copy, arg_list);
+ 	try_len = strlen(fmt)*2;
+	while(!(msg_len = a_vsprintf_try_len(try_len, fmt, arg_list_copy)))
+	{
+		try_len <<= 1;	// *=2
+		//fprintf(stderr, "%s: try_len=%u\n", __func__, msg_len);
+		va_copy(arg_list_copy, arg_list);
+	}
+	return msg_len;
+}
+
+size_t a_sprintf_find_len(const char *fmt, ...)
+{
+	va_list args;
+	size_t out;
+
+	va_start(args, fmt);
+	out = a_vsprintf_find_len(fmt, args);
+	va_end(args);
+	return out;
+}
+
+
+/** Vsprintf into a malloced buffer of the appropriate size.
+ * @param fmt The format string for vsprintf.
+ * @param arg_list The argument list for vsprintf.
+ */
 char *a_vsprintf_malloc(const char *fmt, va_list arg_list)
 {
 	unsigned int len = 0;
 	char *out = NULL;
 
 	/* find size of output */
-	if((len = vsnprintf(out, len, fmt, arg_list) + 1) < 1)
-		a_error_ret(NULL, a_error_stdc);
+	len = a_vsprintf_find_len(fmt, arg_list);
+	//fprintf(stderr, "%s: printf len=%u\n", __func__, len);
+	//fflush(stderr);
 
 	/* allocate memory */
 	if(!(out = (char *)a_malloc(sizeof(char) * len)))
+	{
+		//fprintf(stderr, "%s: malloc failed\n", __func__);
+		//fflush(stderr);
 		return NULL;
+	}
 
 	/* actually format the message */
 	if(vsnprintf(out, len, fmt, arg_list) < 0)
-		a_error_ret(NULL, a_clean_free, out, a_error_stdc);
-
+	{
+		//fprintf(stderr, "%s: vsnprintf for real failed\n", __func__);
+		//fflush(stderr);
+		a_error_goto(perror, error);
+	}
 	return out;
+error:
+	if(out)
+		a_free(out);
+	return NULL;
 }
 
 char *a_sprintf_malloc(const char *fmt, ...)
@@ -99,7 +182,7 @@ void *a_malloc(size_t size)
 
 	/* allocate size */
 	if(!(out = malloc(size)))
-		a_error_ret(NULL, a_error_stdc);
+		a_error_ret(perror, NULL);
 
 	return out;
 }
@@ -116,7 +199,7 @@ void *a_realloc(void *in, size_t size)
 	}
 
 	if(!(out = realloc(in, size)))
-		a_error_ret(NULL, a_error_stdc);
+		a_error_ret(perror, NULL);
 
 	return out;
 }
@@ -149,6 +232,12 @@ void *a_realloc_free(void *in, size_t size)
 	}
 
 	return out;
+}
+
+void a_free(void *in)
+{
+	if(in)
+		free(in);
 }
 
 char *a_chomp(char *str)
@@ -188,19 +277,19 @@ char *a_fullpath(const char
 		*name)
 {
 #	if ! TARGET_WIN32
-		a_error_ret(NULL, a_error_lib, A_ERROR_NOT_IMPLEMENTED);
+		a_error_code_ret(val, A_ERROR_NOT_IMPLEMENTED, NULL);
 #	else
 		char *out;
 		char *filepart;
 		unsigned int out_len;
 	
 		if(!(out_len = GetFullPathName(name, 0, NULL, NULL)))
-			a_error_ret(NULL, a_error_win);
+			a_error_ret(win, NULL);
 		if(!(out = (char *)a_malloc(sizeof(char) * out_len)))
 			return NULL;
 		if(out_len != GetFullPathName(name, out_len, out, &filepart))
 		{
-			a_error_add_m(a_error_win);
+			a_error(win);
 			a_free(out);
 			return NULL;
 		}

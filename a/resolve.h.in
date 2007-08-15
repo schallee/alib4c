@@ -19,12 +19,12 @@
 
 a_begin_c_decls_m
 
-a_error_t a_resolve(const char *hostname, struct in_addr *addr);
+a_error_code_t a_resolve(const char *hostname, struct in_addr *addr);
 char *a_reverse_resolve(struct in_addr *addr, char *out, unsigned int *out_in);
 char *a_reverse_resolve_or_ip(struct in_addr *addr, char *out, unsigned int *out_len);
 char *a_inet_ntoa(struct in_addr *addr, char *out, unsigned int out_len);
-a_error_t a_inet_aton(const char *in, struct in_addr *addr);
-a_error_t a_inet_aton_no_error(const char *in, struct in_addr *addr);
+a_error_code_t a_inet_aton(const char *in, struct in_addr *addr);
+a_error_code_t a_inet_aton_no_error(const char *in, struct in_addr *addr);
 
 a_end_c_decls_m
 

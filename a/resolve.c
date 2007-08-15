@@ -5,6 +5,7 @@
 #include <a/resolve.h>
 #include <a/error.h>
 #include <a/util.h>
+#include <a/sock.h>
 #include <string.h>
 
 #if HAVE_WINSOCK2_H
@@ -42,13 +43,13 @@
 
 #endif
 
-a_error_t a_resolve(const char *hostname, struct in_addr *addr)
+a_error_code_t a_resolve(const char *hostname, struct in_addr *addr)
 {
 	struct hostent *hostinfo;
 
 	/* check operands */
 	if(!(hostname && addr))
-		a_error_ret(A_ERROR_INVALID_OP, a_error_lib, A_ERROR_INVALID_OP);
+		a_error_code_ret(val, A_ERROR_INVALID_OP, A_ERROR_INVALID_OP);
 
 	/* is it just a number? */
 	if(!a_inet_aton_no_error(hostname, addr))
@@ -56,11 +57,7 @@ a_error_t a_resolve(const char *hostname, struct in_addr *addr)
 
 	/* try to resolve it */
 	if(!(hostinfo = gethostbyname(hostname)))
-#		if OS_TYPE_WIN32 && HAVE_WINSOCK2_H
-			a_error_ret(A_ERROR_OTHER, a_error_winsock);
-#		else
-			a_error_ret(A_ERROR_OTHER, a_error_netdb);
-#		endif
+		a_error_code_ret(sock, A_ERROR_OTHER, A_ERROR_OTHER);
 
 	/* copy it */
 	memcpy(addr, hostinfo->h_addr, sizeof(struct in_addr));
@@ -75,11 +72,7 @@ char *a_reverse_resolve(struct in_addr *addr, char *out, unsigned int *out_in)
 
 	/* look up host */
 	if(!(hostinfo = gethostbyaddr((char *)addr, sizeof(addr), AF_INET)))
-#		if HAVE_WINSOCK2_H
-			a_error_ret(NULL, a_error_winsock);
-#		else
-			a_error_ret(NULL, a_error_netdb);
-#		endif
+		a_error_ret(sock, NULL);
 
 	if(!out)
 	{
@@ -89,7 +82,7 @@ char *a_reverse_resolve(struct in_addr *addr, char *out, unsigned int *out_in)
 	else if((addr_len = strlen(hostinfo->h_name)) + 1 >= *out_in)
 	{	/* check lengths */
 		*out_in = addr_len;
-		a_error_ret(NULL, a_error_lib, A_ERROR_OP_SMALL);
+		a_error_code_ret(val, A_ERROR_OP_SMALL, NULL);
 	}
 
 	/* copy name to out */
@@ -114,7 +107,7 @@ char *a_reverse_resolve_or_ip(struct in_addr *addr, char *out, unsigned int *out
 		else if((addr_len = strlen(hostinfo->h_name)) + 1 >= *out_len)
 		{	/* check lengths */
 			*out_len = addr_len;
-			a_error_ret(NULL, a_error_lib, A_ERROR_OP_SMALL);
+			a_error_code_ret(val, A_ERROR_OP_SMALL, NULL);
 		}
 
 		/* copy name to out */
@@ -136,7 +129,7 @@ char *a_inet_ntoa(struct in_addr *addr, char *out, unsigned int out_len)
 	}
 	else
 		if(out_len < 16)
-			a_error_ret(NULL, a_error_lib, A_ERROR_OP_SMALL);
+			a_error_code_ret(val, A_ERROR_OP_SMALL, NULL);
 
 #	if HAVE_INET_NTOP
 		inet_ntop(AF_INET, addr, out, 16);
@@ -149,18 +142,18 @@ char *a_inet_ntoa(struct in_addr *addr, char *out, unsigned int out_len)
 	return out;
 }
 
-a_error_t a_inet_aton(const char *in, struct in_addr *addr)
+a_error_code_t a_inet_aton(const char *in, struct in_addr *addr)
 {
 #	if HAVE_INET_PTON
 		if(inet_pton(AF_INET, in, addr) > 0)
 			return A_ERROR_SUCCESS;
 		else
-			a_error_ret(A_ERROR_OTHER, a_error_posix);
+			a_error_ret(sock, A_ERROR_OTHER);
 #	elif HAVE_INET_ATON
 		if(inet_aton(in, addr))
 			return A_ERROR_SUCCESS;
 		else
-			a_error_ret(A_ERROR_OTHER, a_error_posix);
+			a_error_ret(sock, A_ERROR_OTHER);
 #	else
 #		if HAVE_WINSOCK2_H
 			unsigned long addr_tmp;
@@ -173,15 +166,11 @@ a_error_t a_inet_aton(const char *in, struct in_addr *addr)
 			memcpy(addr, &addr_tmp, a_min_m(sizeof(addr), sizeof(struct in_addr)));
 			return A_ERROR_SUCCESS;
 		}
-#		if HAVE_WINSOCK2_H
-			a_error_ret(A_ERROR_OTHER, a_error_winsock);
-#		else
-			a_error_ret(A_ERROR_OTHER, a_error_posix);
-#		endif
+		a_error_ret(sock, A_ERROR_OTHER);
 #	endif
 }
 
-a_error_t a_inet_aton_no_error(const char *in, struct in_addr *addr)
+a_error_code_t a_inet_aton_no_error(const char *in, struct in_addr *addr)
 {
 #	if HAVE_INET_PTON
 	if(inet_pton(AF_INET, in, addr) > 0)

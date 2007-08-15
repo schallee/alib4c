@@ -9,6 +9,8 @@
 #	include <dmalloc.h>
 #endif
 
+#include<stdlib.h>
+
 /* How our output actually goes out.
  * This is here so that it is easy to change to another output form like syslog
  */
@@ -50,13 +52,19 @@ void a_debug_real(const char *file, unsigned int line, const char *func, const c
 	char *msg;		/* prrintf messaged formated */
 	va_list args;		/* varible arity stuff */
 
+	//fprintf(stderr, "%s starting", __func__);
+	//fflush(stderr);
 	/* turn our location information into a string */
 	info = place_info(file, line, func);
+	//fprintf(stderr, "%s info=%s=", __func__,info);
+	//fflush(stderr);
 
 	/* turn user printf stuff into a string */
 	va_start(args, fmt);
 	msg = a_vsprintf_malloc(fmt, args);
 	va_end(args);
+	//fprintf(stderr, "%s msg=%s=", __func__, msg);
+	//fflush(stderr);
 
 	a_debug_printf("%s %s\n", info, msg);
 

@@ -2,22 +2,37 @@
 #ifndef a_alloca_h
 #define a_alloca_h 1
 
-/* alloca checks AIX requires this to be the first thing in the file.  */
+/* This is from the autoconf docs...Along with lots of warnings that we
+ * shouldn't use it... sorry. */
+
+/* AIX requires this to be the first thing in the file.  */
+#if 0
 #ifndef __GNUC__
-#	if @HAVE_ALLOCA_H@
+#	if HAVE_ALLOCA_H
 #		include <alloca.h>
 #	else
 #		ifdef _AIX
-#			pragma alloca
-#		elif @OS_TYPE_WIN32@
-#			include <malloc.h>
+			#pragma alloca
 #		else
 #			ifndef alloca /* predefined by HP cc +Olibcalls */
-				char *alloca ();
+           			char *alloca ();
 #			endif
 #		endif
 #	endif
+#endif
+#endif
 
+/* modified version as this header is installed...: */
+#if @HAVE_ALLOCA_H@
+#	include <alloca.h>
+#elif @OS_TYPE_WIN32@
+#	include <malloc.h>
+#elif defined(_AIX)
+	/* AIX requires this to be the first thing in the file.  */
+#	pragma alloca
+#elif !defined(__GNUC__) && !defined(alloca)
+	/* HP cc +Olibcalls apparently defines alloca */
+	void *alloca(size_t);
 #endif
 
 #endif
