@@ -1,6 +1,6 @@
 include $(top_srcdir)/config/aminclude/cflags.am
 
-AM_CPPFLAGS= -I@top_srcdir@
+AM_CPPFLAGS= -I@top_builddir@ -I@top_srcdir@
 
 check_PROGRAMS=basename barename chomp vsprintf_malloc strdup strcat_realloc
 TESTS=basename barename chomp vsprintf_malloc strdup strcat_realloc

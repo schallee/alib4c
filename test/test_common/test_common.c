@@ -4,7 +4,7 @@
 
 #include <test_common.h>
 #include <a/types.h>
-#include <a/alloca.h>
+#include <a/mem.h>
 #include <a/error.h>
 #include <a/util.h>
 #include <stdio.h>
@@ -32,12 +32,12 @@ FILE *open_testfile(const char* filename)
 		strcat(path, "/");
 		strcat(path, filename);
 		if(!(file = fopen(path, "r")))
-			a_error_ret(NULL, a_error_stdc);
+			a_error_ret(perror, NULL);
 			/*return_null_flail("us;;p could not open file %s", su_error_file_open, path);*/
 	}
 	else
 		if(!(file = fopen(filename, "r")))
-			a_error_ret(NULL, a_error_stdc);
+			a_error_ret(perror, NULL);
 			/*return_null_flail("us;;p could not open file %s", su_error_file_open, filename);*/
 	return file;
 }

@@ -1,6 +1,6 @@
 include $(top_srcdir)/config/aminclude/cflags.am
 
-AM_CPPFLAGS= -I@top_srcdir@
+AM_CPPFLAGS= -I@top_builddir@ -I@top_srcdir@
 
 check_LTLIBRARIES=libtest_common.la
 libtest_common_la_SOURCES=test_common.c test_common.h
