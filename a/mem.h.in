@@ -1,0 +1,13 @@
+/* @configure_input@ */
+#ifndef a_mem_h
+#define a_mem_h 1
+
+/* FIXME, we need size_t *sigh* */
+#include <stddef.h>
+
+void a_xfree(void *ptr);
+void *a_xmalloc(size_t size);
+void *a_xrealloc(void *ptr, size_t size);
+char *a_xstrdup(const char* str);
+
+#endif
