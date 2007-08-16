@@ -52,6 +52,13 @@ const char *a_error_strerr(a_error_mod_t mod, a_error_code_t code, a_error_free_
 	return mod->getstr(mod, code, free_func);
 }
 
+a_error_code_t a_error_getcode(a_error_mod_t mod)
+{
+	if(mod && mod->getcode)
+		return mod->getcode(mod);
+	return 0;
+}
+
 /** MOD: A **/
 
 static const char *val_get(a_error_mod_t mod, a_error_code_t code, a_error_free_t *free_func)
