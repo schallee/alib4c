@@ -7,12 +7,14 @@
 #include <a/varg.h>
 
 void a_warn_real(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, a_error_code_t code, const char *fmt, ...);
+void a_warn_real_getcode(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, const char *fmt, ...);
 void a_die_real(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, a_error_code_t code, const char *fmt, ...) A_CC_NO_RETURN;
+void a_die_real_getcode(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, const char *fmt, ...);
 char *a_die_place_info(const char *file, unsigned int line, const char *func);
 
-#define a_die(mod,...)		a_die_real(__FILE__, __LINE__, __func__, a_val_concat_m(a_error_mod_,mod), 0, __VA_ARGS__)
+#define a_die(mod,...)		a_die_real_getcode(__FILE__, __LINE__, __func__, a_val_concat_m(a_error_mod_,mod), __VA_ARGS__)
 #define a_die_code(mod,code,...) a_die_real(__FILE__, __LINE__, __func__, a_val_concat_m(a_error_mod_,mod), code, __VA_ARGS__)
-#define a_warn(mod,...)		a_warn_real(__FILE__, __LINE__, __func__, a_val_concat_m(a_error_mod_,mod), 0, __VA_ARGS__)
+#define a_warn(mod,...)		a_warn_real_getcode(__FILE__, __LINE__, __func__, a_val_concat_m(a_error_mod_,mod), __VA_ARGS__)
 #define a_warn_code(mod,code,...) a_warn_real(__FILE__, __LINE__, __func__, a_val_concat_m(a_error_mod_,mod), code, __VA_ARGS__)
 #define a_warn_goto(mod,tag,...)		do	\
 {	\

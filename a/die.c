@@ -51,6 +51,12 @@ static void a_warn_real_vargs(a_error_mod_t error_mod, a_error_code_t code, cons
 	va_list args_cpy;
 	char *place;
 
+	// get error string if any
+	if(!error_mod || error_mod == a_error_mod_none)
+		error_str = NULL;
+	else
+		error_str = a_error_strerr(error_mod, code, &error_str_free);
+
 	// prepare msg
 	va_copy(args_cpy, args);
 	tmp_len = a_vsprintf_find_len(fmt, args);
@@ -61,12 +67,6 @@ static void a_warn_real_vargs(a_error_mod_t error_mod, a_error_code_t code, cons
 	tmp_len = a_sprintf_find_len("[%s:%u:%s]", file, line, func);
 	place = (char *)alloca(sizeof(char) * tmp_len);
 	snprintf(place, tmp_len, "[%s:%u:%s]", file, line, func);
-
-	// get error string if any
-	if(!error_mod || error_mod == a_error_mod_none)
-		error_str = NULL;
-	else
-		error_str = a_error_strerr(error_mod, code, &error_str_free);
 
 	// do the output
 	if(error_str && *error_str)
@@ -90,12 +90,31 @@ void a_warn_real(const char *file, unsigned int line, const char *func, a_error_
 	va_end(args);
 }
 
+void a_warn_real_getcode(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	a_warn_real_vargs(error_mod, a_error_getcode(error_mod), file, line, func, fmt, args);
+	va_end(args);
+}
+
 void a_die_real(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, a_error_code_t code, const char *fmt, ...)
 {
 	va_list args;
 
 	va_start(args, fmt);
 	a_warn_real_vargs(error_mod, code, file, line, func, fmt, args);
+	va_end(args);
+	exit(1);
+}
+
+void a_die_real_getcode(const char *file, unsigned int line, const char *func, a_error_mod_t error_mod, const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	a_warn_real_vargs(error_mod, a_error_getcode(error_mod), file, line, func, fmt, args);
 	va_end(args);
 	exit(1);
 }
