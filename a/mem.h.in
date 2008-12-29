@@ -2,6 +2,19 @@
 #ifndef a_mem_h
 #define a_mem_h 1
 
+/* modified version of autoconf docs on alloca as this header is installed...: */
+#if @HAVE_ALLOCA_H@
+#	include <alloca.h>
+#elif @OS_TYPE_WIN32@
+#	include <malloc.h>
+#elif defined(_AIX)
+	/* AIX requires this to be the first thing in the file.  */
+#	pragma alloca
+#elif !defined(__GNUC__) && !defined(alloca)
+	/* HP cc +Olibcalls apparently defines alloca */
+	void *alloca(size_t);
+#endif
+
 /* FIXME, we need size_t *sigh* */
 #include <stddef.h>
 
@@ -9,5 +22,7 @@ void a_xfree(void *ptr);
 void *a_xmalloc(size_t size);
 void *a_xrealloc(void *ptr, size_t size);
 char *a_xstrdup(const char* str);
+
+typedef void (*a_free_t)(void *);
 
 #endif
