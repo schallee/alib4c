@@ -28,8 +28,4 @@ void *hex2mem_len_malloc(const char *in, size_t len);
 #define hex2mem(out,in)	hex2mem_len(out,(in),strlen(in))
 #define hex2mem_malloc(in) hex2mem_len_malloc(in, strlen(in))
 
-// already have
-char *vsprintf_malloc(const char *fmt, va_list arg_list);
-char *strcat_realloc(char *out, const char *in);
-
 #endif

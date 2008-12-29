@@ -8,55 +8,6 @@
 #include <stdint.h>
 #include <limits.h>
 
-#ifdef DMALLOC
-#	include <dmalloc.h>
-#endif
-
-char *vsprintf_malloc(const char *fmt, va_list args)
-{
-	unsigned int len = 0;
-	char *out = NULL;
-	va_list tmp_args;
-
-	/* find size of output */
-	va_copy(tmp_args, args);
-	if((len = vsnprintf(out, len, fmt, tmp_args) + 1) < 1)
-		die_perror("error calling vsnprintf");
-
-	/* allocate memory */
-	out = (char *)xmalloc(sizeof(char) * len);
-
-	/* actually format the message */
-	if(vsnprintf(out, len, fmt, args) < 0)
-		die_perror("error calling vsnprintf");
-
-	return out;
-}
-
-char *sprintf_malloc(const char *fmt, ...)
-{
-	va_list args;
-	char *out = NULL;
-
-	va_start(args, fmt);
-	out = vsprintf_malloc(fmt, args);
-	va_end(args);
-	return out;
-}
-
-char *strcat_realloc(char *out, const char *in)
-{
-	out = (char *)xrealloc(out, sizeof(char) * ((out ? strlen(out) : 0) + strlen(in) + 1));
-	return strcat(out, in);
-}
-
-void *memcat_realloc(void *a, size_t a_len, const void *b, size_t b_len)
-{
-	a = xrealloc(a, a_len + b_len);
-	memcpy(a + a_len, b, b_len);
-	return a;
-}
-
 char *escape_colon(const char *in)
 {
 	char *out;
