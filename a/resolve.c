@@ -5,6 +5,7 @@
 #include <a/resolve.h>
 #include <a/error.h>
 #include <a/util.h>
+#include <a/mem.h>
 #include <a/sock.h>
 #include <string.h>
 

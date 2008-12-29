@@ -1,8 +1,8 @@
 #include <a/pot.h>
 #include <a/util.h>
-	/* malloc/realloc/free
-	 * a_swap_xor_m
-	 */
+	 /* a_swap_xor_m */
+#include <a/mem.h>
+	/* malloc/realloc/free */
 #include <a/error.h>
 #include <a/debug.h>
 
