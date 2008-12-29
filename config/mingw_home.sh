@@ -8,6 +8,7 @@ for dir in . ..; do
 done
 
 platform=i586-mingw32msvc
+CFLAGS=-DA_DEBUG=1
 exec $top_dir/config/configure_wrap	\
 	--enable-mass-warnings	\
 	--enable-debug	\
