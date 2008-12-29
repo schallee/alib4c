@@ -244,6 +244,6 @@ AS_IF([test x"$enable_verbose_tests" = x"yes"],[AC_DEFINE([USE_VERBOSE_TESTS],[1
 #LTALLOCA=`echo "$ALLOCA" | sed 's/\.[^.]* /.lo /g;s/\.[^.]*$/.lo/'`
 #AC_SUBST(LTALLOCA)
 #set > config.vars
-dnl AC_CONFIG_FILES([a/resolve.h a/clean.h a/error.h a/error_mod.h a/types.h a/varg.h a/util.h a/alloca.h a/Makefile test/Makefile test/test_common/Makefile test/util/Makefile Makefile])
-AC_CONFIG_FILES([a/sock.h a/error.h a/resolve.h a/types.h a/varg.h a/util.h a/mem.h a/alloca.h a/Makefile test/Makefile test/test_common/Makefile test/util/Makefile Makefile])
+dnl AC_CONFIG_FILES([a/resolve.h a/clean.h a/error.h a/error_mod.h a/types.h a/varg.h a/util.h a/Makefile test/Makefile test/test_common/Makefile test/util/Makefile Makefile])
+AC_CONFIG_FILES([a/sock.h a/error.h a/resolve.h a/types.h a/varg.h a/util.h a/mem.h a/Makefile test/Makefile test/test_common/Makefile test/util/Makefile Makefile])
 AC_OUTPUT
