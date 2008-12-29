@@ -7,4 +7,4 @@ for dir in . ..; do
 	fi
 done
 
-exec $top_dir/config/configure_wrap --enable-mass-warnings --prefix=$HOME --bindir=$HOME/bin/$CONFIG_GUESS --libdir=$HOME/lib/$CONFIG_GUESS --includedir=$HOME/include/$CONFIG_GUESS
+exec $top_dir/config/configure_wrap --enable-mass-warnings --prefix=$HOME --bindir=$HOME/bin/$CONFIG_GUESS --libdir=$HOME/lib/$CONFIG_GUESS --includedir=$HOME/include/$CONFIG_GUESS "$@"
