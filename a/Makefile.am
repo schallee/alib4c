@@ -32,7 +32,7 @@ endif
 
 lib_LTLIBRARIES=liba.la libasock.la
 
-liba_la_SOURCES=cc.h cpp.h util.c util.h types.h varg.h debug.c debug.h die.c die.h mem.c mem.h xmem.h error.c error.h pot.c pot.h $(WIN_SOURCES)
+liba_la_SOURCES=cc.h cpp.h util.c util.h types.h varg.h debug.c debug.h die.c die.h mem.c mem.h xmem.h error.c error.h pot.c pot.h list.c list.h collect.h collect.c bintree.c bintree.h $(WIN_SOURCES)
 #nodist_liba_la_SOURCES=$(WIN_NODIST_SOURCES)
 liba_la_LDFLAGS=-version-info $(LIBA_CURRENT):$(LIBA_RELEASE):$(LIBA_AGE) $(WIN_LDFLAGS)
 if HAVE_OPENSSL
@@ -43,7 +43,7 @@ libasock_la_SOURCES=resolve.c resolve.h sock.c sock.h
 libasock_la_LDFLAGS=-version-info $(LIBASOCK_CURRENT):$(LIBASOCK_RELEASE):$(LIBASOCK_AGE) $(WIN_LDFLAGS)
 libasock_la_LIBADD=-la $(WIN_ASOCK_LIBS)
 
-nodist_pkginclude_HEADERS=mem.h resolve.h types.h util.h varg.h error.h sock.h alloca.h
-pkginclude_HEADERS=mem.h cc.h cpp.h util.h  types.h varg.h resolve.h debug.h die.h xmem.h error.h sock.h pot.h
+nodist_pkginclude_HEADERS=mem.h resolve.h types.h util.h varg.h error.h sock.h
+pkginclude_HEADERS=mem.h cc.h cpp.h util.h  types.h varg.h resolve.h debug.h die.h xmem.h error.h sock.h pot.h list.h collect.h bintree.h
 
 #CLEANFILES=event_log_msg_dll_loc.c
