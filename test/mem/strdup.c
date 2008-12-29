@@ -3,7 +3,7 @@
 #endif
 
 #include <test/test_common/test_common.h>
-#include <a/util.h>
+#include <a/mem.h>
 #include <string.h>
 
 #define test_string		"toast is yummy"

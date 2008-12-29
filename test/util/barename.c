@@ -4,6 +4,7 @@
 
 #include <test/test_common/test_common.h>
 #include <a/util.h>
+#include <a/mem.h>
 #include <a/error.h>
 #include <stdio.h>
 #include <string.h>

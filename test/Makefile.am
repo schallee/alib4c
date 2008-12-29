@@ -1,4 +1,4 @@
-SUBDIRS = test_common util .
+SUBDIRS = test_common util mem .
 include $(top_srcdir)/config/aminclude/cflags.am
 
 AM_CPPFLAGS= -I@top_builddir@ -I@top_srcdir@

@@ -6,5 +6,4 @@ barename
 basename
 chomp
 strcat_realloc
-strdup
 vsprintf_malloc
