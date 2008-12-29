@@ -149,7 +149,7 @@ extern void a_bintree_delete(a_bintree_t *tree, void *key)
 		tree->val_free(val);
 }
 
-void node_axe(a_bintree_t *tree, a_bintree_node_t *root)
+static void node_axe(a_bintree_t *tree, a_bintree_node_t *root)
 {
 	if(!root)
 		return;
