@@ -19,6 +19,28 @@
 	int isspace(int c);
 #endif
 
+char *a_strcat_realloc(char *orig, const char *add)
+{
+	size_t orig_len = 0;
+
+	if(!add)
+		return orig;
+	if(orig)
+		orig_len = strlen(orig);
+	if(!(orig = (char *)a_realloc(orig, orig_len + strlen(add) + 1)))
+		return NULL;
+	strcat(orig, add);
+	return orig;
+}
+
+void *memcat_realloc(void *a, size_t a_len, const void *b, size_t b_len)
+{
+	if(!(a = a_realloc(a, a_len + b_len)))
+		return NULL;
+	memcpy(a + a_len, b, b_len);
+	return a;
+}
+
 char *a_basename(const char *path)
 {
 	const char *tmp;
@@ -172,74 +194,6 @@ char *a_sprintf_malloc(const char *fmt, ...)
 	return out;
 }
 
-void *a_malloc(size_t size)
-{
-	void *out;
-
-	/* if size is zero, don't allocate */
-	if(!size)
-		return NULL;
-
-	/* allocate size */
-	if(!(out = malloc(size)))
-		a_error_ret(perror, NULL);
-
-	return out;
-}
-
-void *a_realloc(void *in, size_t size)
-{
-	void *out;
-
-	if(!size)
-	{
-		if(in)
-			a_free(in);
-		return NULL;
-	}
-
-	if(!(out = realloc(in, size)))
-		a_error_ret(perror, NULL);
-
-	return out;
-}
-
-char *a_strdup(const char *in)
-{
-	char *out;
-	unsigned int len;
-
-	len = strlen(in) + 1;
-
-	/* allocate it */
-	if(!(out = (char *)a_malloc(sizeof(char) * len)))
-		return NULL;
-
-	/* copy it */
-	memcpy(out, in, len);
-
-	return out;
-}
-
-void *a_realloc_free(void *in, size_t size)
-{
-	void *out;
-
-	if(!(out = a_realloc(in, size)))
-	{
-		a_free(in);
-		return NULL;
-	}
-
-	return out;
-}
-
-void a_free(void *in)
-{
-	if(in)
-		free(in);
-}
-
 char *a_chomp(char *str)
 {
 	char *ptr;
@@ -296,38 +250,6 @@ char *a_fullpath(const char
 	
 		return out;
 #	endif
-}
-
-void *a_zero_mem(volatile void *ptr, size_t len)
-{
-	return memset((void *)ptr, 0, len);
-}
-
-/* FIXME: error handling */
-char *a_strcat_realloc(char *orig, const char *add)
-{
-	size_t orig_len = 0;
-
-	if(!add)
-		return orig;
-	if(orig)
-		orig_len = strlen(orig);
-	if(!(orig = (char *)a_realloc(orig, orig_len + strlen(add) + 1)))
-		return NULL;
-	strcat(orig, add);
-	return orig;
-}
-
-/* FIXME: error handling */
-void *a_memdup(const void *in, size_t in_len)
-{
-	void *out;
-
-	if(!in)
-		return NULL;
-	if(!(out = malloc(in_len)))
-		return NULL;
-	return memcpy(out, in, in_len);
 }
 
 char *a_strchomp(char *str)
