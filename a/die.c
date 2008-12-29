@@ -1,4 +1,3 @@
-#include <a/alloca.h>
 #include <a/mem.h>
 #include <a/error.h>
 #include <a/varg.h>
