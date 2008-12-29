@@ -38,7 +38,8 @@ arch=`sh "$top_dir/config/config.guess" | sed 's/[^a-zA-Z0-9]/_/g'`
 if test x"$arch" != x""; then
 	arch="ARCH_$arch."
 fi
-cache_name="$config_cache/config-$hostname$arch$cflags${args}cache"
+cache_name=`echo $hostname$arch$cflags${args} | sha1sum | cut -d ' ' -f1`
+cache_name="$config_cache/config-$cache_name.cache"
 # go figure, when I exec it it doesn't work when a ' ' is in pwd
 #exec ./configure --cache-file=$cache_name $*
 sh "$top_dir/configure" --cache-file=$cache_name $*
