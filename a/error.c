@@ -229,7 +229,7 @@ static const struct a_error_stack_struct stack_alloc_error =
 	NULL
 };
 
-void a_error_stack_free(a_error_stack_t stack)
+extern void a_error_stack_free(a_error_stack_t stack)
 {
 	if(!stack || stack == &stack_alloc_error)
 		return;
@@ -239,7 +239,7 @@ void a_error_stack_free(a_error_stack_t stack)
 	free(stack);
 }
 
-a_error_stack_t a_error_stack(a_error_mod_t mod, a_error_code_t code, a_error_stack_t prev)
+extern a_error_stack_t a_error_stack(a_error_mod_t mod, a_error_code_t code, a_error_stack_t prev)
 {
 	a_error_stack_t stack;
 
@@ -254,12 +254,12 @@ a_error_stack_t a_error_stack(a_error_mod_t mod, a_error_code_t code, a_error_st
 	return stack;
 }
 
-a_error_stack_t a_error_get_stack(void)
+extern a_error_stack_t a_error_get_stack(void)
 {
 	return global_error_stack;
 }
 
-a_error_stack_t a_error_set_stack(a_error_stack_t stack)
+extern a_error_stack_t a_error_set_stack(a_error_stack_t stack)
 {
 	global_error_stack = stack;
 	return stack;
@@ -275,4 +275,17 @@ extern void a_error_stack_macro_helper(a_error_mod_t mod, bool getcode, a_error_
 	if(getcode)
 		code = mod->getcode(mod);
 	a_error_set_stack(a_error_stack(mod, code, stack));
+}
+
+extern a_error_code_t a_error_get_alib_code()
+{
+	a_error_stack_t stack;
+	
+	stack = a_error_get_stack();
+	if(!stack)
+		return A_ERROR_SUCCESS;
+	if(stack->mod == a_error_mod_alib)
+		return stack->code;
+	else
+		a_error_code_ret(alib, A_ERROR_OTHER, A_ERROR_OTHER);
 }

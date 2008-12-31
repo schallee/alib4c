@@ -55,6 +55,7 @@ extern a_error_stack_t a_error_get_stack(void);
 extern a_error_stack_t a_error_set_stack(a_error_stack_t stack);
 extern void a_error_stack_macro_helper(a_error_mod_t mod, bool getcode, a_error_code_t code, bool start);
 extern a_error_code_t a_error_getcode(a_error_mod_t mod);
+extern a_error_code_t a_error_get_alib_code();
 
 #define A_ERROR_C(val)			(val)
 #define A_ERROR_NO_ERROR		A_ERROR_C(0)
