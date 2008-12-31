@@ -73,6 +73,32 @@ void *a_malloc(size_t size)
 	return out;
 }
 
+void *a_malloc0(size_t size)
+{
+	void *ret;
+
+	if(!(ret = a_malloc(size)))
+		return NULL;
+	return a_zero_mem(ret,size);
+}
+
+extern void *a_mallocNULL(size_t size)
+{
+	void *ret;
+	void **ptr_array;
+	size_t c;
+
+	/* make sure size is multiple of sizeof(void*) */
+	if(size & (~((~((size_t)0)) << sizeof(void*))))
+		a_error_code_ret(alib, A_ERROR_INVALID_OP, NULL);
+	if(!(ret = a_malloc(size)))
+		return NULL;
+	ptr_array = (void **)ret;
+	for(c=0;c<(size>>sizeof(void*));c++)
+		ptr_array[c] = NULL;
+	return ret;
+}
+
 void *a_realloc(void *in, size_t size)
 {
 	void *out;
@@ -103,6 +129,27 @@ void *a_xmalloc(size_t size)
 	if(!(out = malloc(size)))
 		a_die(perror, "could not malloc(%u)", (unsigned int)size);
 	return out;
+}
+
+void *a_xmalloc0(size_t size)
+{
+	return a_zero_mem(a_xmalloc(size), size);
+}
+
+extern void *a_xmallocNULL(size_t size)
+{
+	void *ret;
+	void **ptr_array;
+	size_t c;
+
+	/* make sure size is multiple of sizeof(void*) */
+	if(size & (~((~((size_t)0)) << sizeof(void*))))
+		a_error_code_ret(alib, A_ERROR_INVALID_OP, NULL);
+	ret = a_xmalloc(size);
+	ptr_array = (void **)ret;
+	for(c=0;c<(size>>sizeof(void*));c++)
+		ptr_array[c] = NULL;
+	return ret;
 }
 
 void *a_xrealloc(void *ptr, size_t size)

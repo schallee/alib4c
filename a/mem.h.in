@@ -24,13 +24,22 @@ a_begin_c_decls_m
 
 void a_xfree(void *ptr);
 void *a_xmalloc(size_t size);
+void *a_xmalloc0(size_t size);
+void *a_xmallocNULL(size_t size);
 void *a_xrealloc(void *ptr, size_t size);
 char *a_xstrdup(const char* str);
+#define a_xnew(_type)	((_type*)a_xmalloc(sizeof(_type)))
+#define a_xnew0(_type)	((_type*)a_xmalloc0(sizeof(_type)))
 
 void *a_malloc(size_t size);
+void *a_malloc0(size_t size);
+void *a_mallocNULL(size_t size);
 void *a_realloc(void *in, size_t size);
 void *a_realloc_free(void *in, size_t size);
 void a_free(void *in);
+/* idea stolen from glib... */
+#define a_new(_type)	((_type*)a_malloc(sizeof(_type)))
+#define a_new0(_type)	((_type*)a_malloc0(sizeof(_type)))
 
 void *a_memdup(const void *in, size_t in_len);
 char *a_strdup(const char *in);
