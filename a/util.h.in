@@ -27,6 +27,13 @@ a_begin_c_decls_m
 	(b) ^= (a);	\
 	(a) ^= (b);	\
 } while(0)
+#define a_swap_xor_type_m(a,b,cast_type,result_type)	do	\
+{	\
+	(a) = (result_type)(((cast_type)(a))^((cast_type)(b)));	\
+	(b) = (result_type)(((cast_type)(b))^((cast_type)(a)));	\
+	(a) = (result_type)(((cast_type)(a))^((cast_type)(b)));	\
+} while(0)
+#define a_swap_xor_ptr_m(a,b,result_type)	a_swap_xor_type_m(a,b,uintptr_t,result_type)
 
 char *a_basename(const char *path);
 char *a_barename(const char *path);
