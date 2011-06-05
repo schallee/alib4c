@@ -18,7 +18,7 @@
 /** Open a file in the test directory.
  * This takes building in a non-source directory into account.
  */
-FILE *open_testfile(const char* filename)
+extern FILE *open_testfile(const char* filename)
 {
 	char *dir;
 	char *path;
@@ -40,4 +40,37 @@ FILE *open_testfile(const char* filename)
 			a_error_ret(perror, NULL);
 			/*return_null_flail("us;;p could not open file %s", su_error_file_open, filename);*/
 	return file;
+}
+
+extern int unique_rand(const int *prev, size_t prev_len)
+{
+	int ret;
+
+	do
+	{
+		ret = rand();
+	} while(contains(prev, prev_len, ret));
+	return ret;
+}
+
+extern bool contains(const int *array, size_t len, int val)
+{
+	const int *end = array+len;
+	const int *ptr;
+
+	for(ptr=array;ptr!=end;ptr++)
+		if(*ptr == val)
+			return true;
+	return false;
+}
+
+extern int nonzero_rand()
+{
+	int ret;
+
+	do
+	{
+		ret = rand();
+	} while(!ret);
+	return ret;
 }
