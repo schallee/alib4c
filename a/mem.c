@@ -1,5 +1,6 @@
 #include <a/mem.h>
 #include <a/die.h>
+#include <a/debug.h>
 
 /* FIXME, autoconf */
 #include <stdlib.h>
@@ -89,12 +90,15 @@ extern void *a_mallocNULL(size_t size)
 	size_t c;
 
 	/* make sure size is multiple of sizeof(void*) */
-	if(size & (~((~((size_t)0)) << sizeof(void*))))
+	/*a_debug("size=%u sizeof(void*)=%u= yada=0x%08x", size, sizeof(void*), (~((~((size_t)0)) << sizeof(void*))));
+	a_debug("~0=0x%08x << sizeof(void*)=0x%08x", (~((size_t)0)), ((~((size_t)0)) << sizeof(void*)));
+	if(size & (~((~((size_t)0)) << sizeof(void*))))*/
+	if(size % sizeof(void*))
 		a_error_code_ret(alib, A_ERROR_INVALID_OP, NULL);
 	if(!(ret = a_malloc(size)))
 		return NULL;
 	ptr_array = (void **)ret;
-	for(c=0;c<(size>>sizeof(void*));c++)
+	for(c=0;c<(size/sizeof(void*));c++)
 		ptr_array[c] = NULL;
 	return ret;
 }
