@@ -5,6 +5,10 @@ config.status
 configure
 .deps
 INSTALL
+*.la
+.libs
 libtool
+*.lo
 Makefile
 Makefile.in
+*.o
