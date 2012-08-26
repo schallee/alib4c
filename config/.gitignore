@@ -1,7 +1,10 @@
+cache
 config.guess
+config.h
 config.h.in
 config.sub
 depcomp
 install-sh
 ltmain.sh
 missing
+stamp-h1
