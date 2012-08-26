@@ -1,9 +1,0 @@
-Makefile.in
-Makefile
-.deps
-.libs
-bintree
-die
-error
-pot
-hash

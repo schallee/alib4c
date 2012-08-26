@@ -1,9 +1,0 @@
-Makefile.in
-Makefile
-.deps
-.libs
-barename
-basename
-chomp
-strcat_realloc
-vsprintf_malloc
