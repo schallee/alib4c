@@ -20,9 +20,9 @@ int main(void);
 int main(void)
 {
 	int c;
-	int keys[NUM];
-	int vals[NUM];
-	int tmp;
+	intptr_t keys[NUM];
+	intptr_t vals[NUM];
+	intptr_t tmp;
 	a_hash_t hash;
 
 	srand(time(NULL));
@@ -44,7 +44,7 @@ int main(void)
 	}
 	for(c=0;c<NUM/2;c++)
 	{
-		if((tmp = (int)a_hash_get(&hash, (void *)keys[c]))!=vals[c])
+		if((tmp = (intptr_t)a_hash_get(&hash, (void *)keys[c]))!=vals[c])
 		{
 			a_warn(stack, "expected %d for key %d but got %d", vals[c], keys[c], tmp);
 			test_fail();
@@ -52,7 +52,7 @@ int main(void)
 	}
 	for(c=NUM/2;c<NUM;c++)
 	{
-		if((tmp = (int)a_hash_get(&hash, (void *)keys[c]))!=0)
+		if((tmp = (intptr_t)a_hash_get(&hash, (void *)keys[c]))!=0)
 		{
 			a_warn(stack, "expected no value for key %d but got %d", keys[c], tmp);
 			test_fail();
@@ -68,7 +68,7 @@ int main(void)
 	}
 	for(c=0;c<NUM;c++)
 	{
-		if((tmp = (int)a_hash_get(&hash, (void *)keys[c]))!=vals[c])
+		if((tmp = (intptr_t)a_hash_get(&hash, (void *)keys[c]))!=vals[c])
 		{
 			a_warn(stack, "expected %d for key %d but got %d", vals[c], keys[c], tmp);
 			test_fail();
@@ -78,7 +78,7 @@ int main(void)
 		a_hash_delete(&hash, (void *)keys[c]);
 	for(c=0;c<NUM/2;c++)
 	{
-		if((tmp = (int)a_hash_get(&hash, (void *)keys[c]))!=0)
+		if((tmp = (intptr_t)a_hash_get(&hash, (void *)keys[c]))!=0)
 		{
 			a_warn(stack, "expected no value for key %d but got %d", keys[c], tmp);
 			test_fail();
@@ -86,7 +86,7 @@ int main(void)
 	}
 	for(c=NUM/2;c<NUM;c++)
 	{
-		if((tmp = (int)a_hash_get(&hash, (void *)keys[c]))!=vals[c])
+		if((tmp = (intptr_t)a_hash_get(&hash, (void *)keys[c]))!=vals[c])
 		{
 			a_warn(stack, "expected %d for key %d but got %d", vals[c], keys[c], tmp);
 			test_fail();
@@ -96,7 +96,7 @@ int main(void)
 		a_hash_delete(&hash, (void *)keys[c]);
 	for(c=0;c<NUM;c++)
 	{
-		if((tmp = (int)a_hash_get(&hash, (void *)keys[c]))!=0)
+		if((tmp = (intptr_t)a_hash_get(&hash, (void *)keys[c]))!=0)
 		{
 			a_warn(stack, "expected no value for key %d but got %d", keys[c], tmp);
 			test_fail();

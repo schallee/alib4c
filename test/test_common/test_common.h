@@ -24,8 +24,8 @@
 #define verb_printf(...)		verbose_printf(__VA_ARGS__)
 
 extern FILE *open_testfile(const char* filename);
-extern int unique_rand(const int *prev, size_t prev_len);
-extern bool contains(const int *array, size_t len, int val);
+extern int unique_rand(const intptr_t *prev, size_t prev_len);
+extern bool contains(const intptr_t *array, size_t len, int val);
 extern int nonzero_rand();
 
 #endif

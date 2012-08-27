@@ -28,10 +28,10 @@ int nonzero_rand()
 	return ret;
 }
 
-bool contains(const int *array, size_t len, int val)
+bool contains(const intptr_t *array, size_t len, int val)
 {
-	const int *end = array+len;
-	const int *ptr;
+	const intptr_t *end = array+len;
+	const intptr_t *ptr;
 
 	for(ptr=array;ptr!=end;ptr++)
 		if(*ptr == val)
@@ -39,9 +39,9 @@ bool contains(const int *array, size_t len, int val)
 	return false;
 }
 
-int unique_rand(const int *prev, size_t prev_len)
+int unique_rand(const intptr_t *prev, size_t prev_len)
 {
-	int ret;
+	intptr_t ret;
 
 	do
 	{
@@ -53,9 +53,9 @@ int unique_rand(const int *prev, size_t prev_len)
 int main(void)
 {
 	int c;
-	int keys[NUM];
-	int vals[NUM];
-	int tmp;
+	intptr_t keys[NUM];
+	intptr_t vals[NUM];
+	intptr_t tmp;
 	a_bintree_t tree;
 
 	srand(time(NULL));
@@ -75,7 +75,7 @@ int main(void)
 	}
 	for(c=0;c<NUM/2;c++)
 	{
-		if((tmp = (int)a_bintree_get(&tree, (void *)keys[c]))!=vals[c])
+		if((tmp = (intptr_t)a_bintree_get(&tree, (void *)keys[c]))!=vals[c])
 		{
 			a_warn(stack, "expected %d for key %d but got %d", vals[c], keys[c], tmp);
 			test_fail();
@@ -83,7 +83,7 @@ int main(void)
 	}
 	for(c=NUM/2;c<NUM;c++)
 	{
-		if((tmp = (int)a_bintree_get(&tree, (void *)keys[c]))!=0)
+		if((tmp = (intptr_t)a_bintree_get(&tree, (void *)keys[c]))!=0)
 		{
 			a_warn(stack, "expected no value for key %d but got %d", keys[c], tmp);
 			test_fail();
@@ -99,7 +99,7 @@ int main(void)
 	}
 	for(c=0;c<NUM;c++)
 	{
-		if((tmp = (int)a_bintree_get(&tree, (void *)keys[c]))!=vals[c])
+		if((tmp = (intptr_t)a_bintree_get(&tree, (void *)keys[c]))!=vals[c])
 		{
 			a_warn(stack, "expected %d for key %d but got %d", vals[c], keys[c], tmp);
 			test_fail();
@@ -109,7 +109,7 @@ int main(void)
 		a_bintree_delete(&tree, (void *)keys[c]);
 	for(c=0;c<NUM/2;c++)
 	{
-		if((tmp = (int)a_bintree_get(&tree, (void *)keys[c]))!=0)
+		if((tmp = (intptr_t)a_bintree_get(&tree, (void *)keys[c]))!=0)
 		{
 			a_warn(stack, "expected no value for key %d but got %d", keys[c], tmp);
 			test_fail();
@@ -117,7 +117,7 @@ int main(void)
 	}
 	for(c=NUM/2;c<NUM;c++)
 	{
-		if((tmp = (int)a_bintree_get(&tree, (void *)keys[c]))!=vals[c])
+		if((tmp = (intptr_t)a_bintree_get(&tree, (void *)keys[c]))!=vals[c])
 		{
 			a_warn(stack, "expected %d for key %d but got %d", vals[c], keys[c], tmp);
 			test_fail();
@@ -127,7 +127,7 @@ int main(void)
 		a_bintree_delete(&tree, (void *)keys[c]);
 	for(c=0;c<NUM;c++)
 	{
-		if((tmp = (int)a_bintree_get(&tree, (void *)keys[c]))!=0)
+		if((tmp = (intptr_t)a_bintree_get(&tree, (void *)keys[c]))!=0)
 		{
 			a_warn(stack, "expected no value for key %d but got %d", keys[c], tmp);
 			test_fail();

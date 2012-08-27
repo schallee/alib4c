@@ -42,7 +42,7 @@ extern FILE *open_testfile(const char* filename)
 	return file;
 }
 
-extern int unique_rand(const int *prev, size_t prev_len)
+extern int unique_rand(const intptr_t *prev, size_t prev_len)
 {
 	int ret;
 
@@ -53,10 +53,10 @@ extern int unique_rand(const int *prev, size_t prev_len)
 	return ret;
 }
 
-extern bool contains(const int *array, size_t len, int val)
+extern bool contains(const intptr_t *array, size_t len, int val)
 {
-	const int *end = array+len;
-	const int *ptr;
+	const intptr_t *end = array+len;
+	const intptr_t *ptr;
 
 	for(ptr=array;ptr!=end;ptr++)
 		if(*ptr == val)
