@@ -73,7 +73,7 @@
 
 /* min/max */
 #define a_min_m(a,b)		((a)<(b) ? (a) : (b))
-#define a_max_m(a,b)		((a)>(b) ? (a) : (b)
+#define a_max_m(a,b)		((a)>(b) ? (a) : (b))
 
 /* wrappers */
 #define a_call_return_m(run,val)	do	\
