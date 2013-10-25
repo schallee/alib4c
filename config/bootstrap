@@ -216,7 +216,10 @@ fi
 
 # check libtoolize
 LT=libtoolize
-cmd_exists $LT fatal
+if ! cmd_exists $LT; then
+	LT=glibtoolize
+	cmd_exists $LT || fatal "Either libtool or glibtool is required."
+fi
 
 check_version $LT 1.5
 
