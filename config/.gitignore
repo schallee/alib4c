@@ -8,3 +8,5 @@ install-sh
 ltmain.sh
 missing
 stamp-h1
+compile
+test-driver

@@ -3,3 +3,5 @@ die
 error
 hash
 pot
+*.log
+*.trs
