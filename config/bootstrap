@@ -22,7 +22,7 @@ fatal()
 
 cmd_exists()
 {
-	echo -n "Checking for $1..."
+	printf "Checking for $1..."
 	if $1 --version > /dev/null 2> /dev/null; then
 		echo "yes"
 		return 0
@@ -39,7 +39,7 @@ cmd_exists()
 test_cmd()
 {
 	if test x"$3" != x"false"; then
-		echo -n "Checking that $1 can handle $2..."
+		printf "Checking that $1 can handle $2..."
 		if $1 $2 --version > /dev/null 2>/dev/null; then
 			echo "yes"
 			return 0
@@ -53,9 +53,9 @@ test_cmd()
 
 check_version()
 {
-	echo -n "Checking $1 version..."
+	printf "Checking $1 version..."
 	VER=`$1 --version | sed -e '1!d; s/.*[ 	]\([0123456789][0123456789]*\)\.\([0123456789][0123456789]*\).*/\1.\2/g'`
-	echo -n "$VER"
+	printf "$VER"
 	if test x"$VER" = x"$2"; then
 		echo " good"
 		return 0
@@ -71,14 +71,14 @@ check_version()
 
 run_cmd()
 {
-	echo -n "Running $1..."
+	printf "Running $1..."
 	$1 $2 > .tmp.out 2>&1
 	LAST_STATUS=$?
 	if test x"$LAST_STATUS" != x"0" || test x"$3" = x"true" || test x"$4" = x"true"; then
 		if test x`wc -l .tmp.out | cut -d' ' -f1` != x"0"; then
 			echo
 			cat .tmp.out
-			echo -n "Running $1..."
+			printf "Running $1..."
 		fi
 	fi
 	rm -f .tmp.out
@@ -155,7 +155,7 @@ fi
 if test_cmd $AM --force-missing; then
 	AM_OPTS="$AM_OPTS --force-missing"
 else
-	echo -n "removing automake installed files..."
+	printf "removing automake installed files..."
 	rm -f config/install-sh config/mkinstalldirs config/missing INSTALL COPYING
 	echo "done"
 fi
