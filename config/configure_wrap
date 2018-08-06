@@ -1,6 +1,33 @@
 #! /bin/sh
 
+set -e
+#set -x
+
 config_cache="config/cache"
+
+die()
+{
+	echo "$@" >&2
+	exit 1
+}
+
+check_start()
+{
+	printf 'Checking for %s...' "$*"
+}
+
+check_fail()
+{
+	printf 'FAILED!\n'
+	exit 1
+}
+
+check_end()
+{
+	printf '%s\n' "$*"
+}
+
+check_start top level directory
 
 for dir in . ..; do
 	if [ -f "$dir/configure.ac" ]; then
@@ -8,38 +35,161 @@ for dir in . ..; do
 		break;
 	fi
 done
+test x"$top_dir" = x"" && check_fail
+check_end "${top_dir}"
 
-if [ ! -f "$top_dir/configure.ac" ]; then
-	echo "failed to find top directory" >&2
-	exit 1
+check_start sha1
+if command -v sha1sum >/dev/null 2>&1; then
+	sha1=sha1sum
+elif command -v shasum >/dev/null 2>&1; then
+	sha1=shasum
 fi
+test x"${sha1}" = x"" && check_fail
+check_end "${sha1}"
 
-config_cache="$top_dir/config/cache"
-
+config_cache="${top_dir}/${config_cache}"
+check_start "${config_cache}"
 if test -d $config_cache; then
-	:
+	check_end exists
 else
-	mkdir $config_cache;
+	check_end missing
+	printf 'Creating %s...' "${config_cache}"
+	mkdir -p "${config_cache}" || check_fail
+	check_end created
 fi
 
+cache_name_base=''
+
+shell_escape_single_quotes()
+{
+	printf '%s' "$*" | sed -e "s/'/'\"'\"'/g"
+}
+
+add_name_escaped_value()
+{
+	local prev
+	local name
+	local val
+
+	case $# in
+		0)	# notta
+			;;
+		1)	# just old
+			printf '%s' "$1";
+			;;
+		*)
+			if test x"${1}" = x""; then
+				prev=''
+			else
+				prev="${1} "	# append space
+			fi
+			if test x"${2}" = x""; then
+				name='UNNAMED'
+			else
+				name="${2}"
+			fi
+			shift 2
+			if test x"${*}" = x""; then
+				val=''
+			else
+				val=`shell_escape_single_quotes "${*}"`
+			fi
+			printf "%s%s='%s'" "${prev}" "${name}" "${val}"
+			;;
+	esac
+}
+
+#for a in '' 'a'; do
+	#for b in '' 'b'; do
+		#for c in '' 'c'; do
+			#printf '[printf|%s|%s|%s]' "${a}" "${b}" "${c}"
+			#add_name_escaped_value "${a}" "${b}" "${c}"
+			#printf '[printf|%s|%s|%s]\n' "${a}" "${b}" "${c}"
+		#done
+	#done
+#done
+
+#printf '[printf]'
+#add_name_escaped_value
+#printf '[printf]\n'
+
+#printf '[printf|a]'
+#add_name_escaped_value 'a'
+#printf '[printf|a]\n'
+
+#printf '[printf|a|b]'
+#add_name_escaped_value 'a' 'b'
+#printf '[printf|a|b]\n'
+
+#exit 1
+
+check_start CFLAGS
 if test x"${CFLAGS+set}" = x"set"; then
-	cflags=`echo $CFLAGS | sed 's/[^a-zA-Z0-9]/_/g'`
-	cflags="CFLAGS_${cflags}."
+	check_end "${CFLAGS}"
+	cache_name_base=`add_name_escaped_value "${cache_name_base}" "CFLAGS" "${CFLAGS}"`
+else
+	check_end "none"
 fi
-hostname=`echo $HOSTNAME | sed 's/[^a-zA-Z0-9]/_/g'`
-if test x"$hostname" != x""; then
-	hostname="HOSTNAME_$hostname."
+
+check_start hostname
+if test x"${HOSTNAME}" != x""; then
+	cache_host_name="${HOSTNAME}"
+elif command -v 'hostname' > /dev/null 2>&1; then
+	cache_host_name=`hostname`
+else
+	cache_host_name='unknown'
 fi
-args=`echo $* | sed 's/[^a-zA-Z0-9]/_/g'`
-if test x"$args" != x""; then
-	args="ARGS_$args."
+check_end "${cache_host_name}"
+cache_name_base=`add_name_escaped_value "${cache_name_base}" "HOSTNAME" "${cache_host_name}"`
+
+check_start username
+if test x"${USER}" != x""; then
+	cache_user_name="${USER}"
+elif test x"${LOGNAME}" != x""; then
+	cache_user_name="${LOGNAME}"
+elif command -v 'whoami' >/dev/null 2>&1; then
+	cache_user_name=`whoami`
+else
+	cache_user_name='unknown'
 fi
-arch=`sh "$top_dir/config/config.guess" | sed 's/[^a-zA-Z0-9]/_/g'`
-if test x"$arch" != x""; then
-	arch="ARCH_$arch."
+check_end "${cache_user_name}"
+cache_name_base=`add_name_escaped_value "${cache_name_base}" "USER" "${cache_user_name}"`
+
+check_start pwd
+if test x"${CWD}" != x""; then
+	cache_pwd="${CWD}"
+else
+	cache_pwd=`pwd`
 fi
-cache_name=`echo $hostname$arch$cflags${args} | sha1sum | cut -d ' ' -f1`
-cache_name="$config_cache/config-$cache_name.cache"
+check_end "${cache_pwd}"
+cache_name_base=`add_name_escaped_value "${cache_name_base}" "PWD" "${cache_pwd}"`
+
+check_start arguments
+arg_index=1
+for arg in "$@"; do
+	cache_name_base=`add_name_escaped_value "${cache_name_base}" "ARG_${arg_index}" "${arg}"`
+	arg_index=$(( $arg_index + 1 ))
+done
+check_end "$*"
+
+check_start config.guess
+config_guess=`sh "$top_dir/config/config.guess"`
+test x"$?" = x"0" || check_fail
+check_end "${config_guess}"
+cache_name_base=`add_name_escaped_value "${cache_name_base}" "CONFIG_GUESS" "${config_guess}"`
+
+check_start cache_name_base
+check_end "${cache_name_base}"
+
+check_start cache_name
+cache_name=`echo "${cache_name_base}" | "${sha1}" | cut -d ' ' -f1`
+test x"$?" = x"0" || check_fail
+check_end "${cache_name}"
+
+check_start cache_file
+cache_file="${config_cache}/config-${cache_name}.cache"
+check_end "${cache_file}"
+
 # go figure, when I exec it it doesn't work when a ' ' is in pwd
 #exec ./configure --cache-file=$cache_name $*
-sh "$top_dir/configure" --cache-file=$cache_name $*
+sh "$top_dir/configure" --cache-file="${cache_file}" "$@"
